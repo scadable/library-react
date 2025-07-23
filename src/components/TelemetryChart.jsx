@@ -1,137 +1,139 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import 'chartjs-adapter-date-fns';
+import { format } from 'date-fns';
+
 import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    AreaChart,
-    Area,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
+    Chart as ChartJS,
+    TimeScale,
+    LinearScale,
+    PointElement,
+    LineElement,
     Tooltip,
     Legend,
-} from 'recharts';
+    Filler,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
-// Your fixed socket endpoint
-const BASE_WS_URL = 'ws://138.197.150.159:8004';
+// Register the pieces we actually use
+ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
+
+const WS_BASE = 'ws://138.197.150.159:8004';
 
 function get(obj, path) {
-    // simple dot-path getter: "data.temp" → obj.data.temp
-    return path
-        .split('.')
-        .reduce((acc, key) => (acc != null ? acc[key] : undefined), obj);
+    return path.split('.').reduce((acc, key) => (acc ? acc[key] : undefined), obj);
 }
 
-export const TelemetryChart = ({
-                                   id,
-                                   xKey,
-                                   yKey,
-                                   bufferSize,
-                                   chartType,
+/**
+ * Live-updating telemetry line chart (Chart.js)
+ */
+export function TelemetryChart({
+                                   deviceCode,   // e.g. "SZKYZF3JXGWPHXAN"
+                                   xPath,        // "timestamp"
+                                   yPath,        // "data.temp"
+                                   roundToMs,    // 1000 ⇒ 1 s buckets
+                                   bufferSize,   // max points to retain
                                    color,
-                               }) => {
-    const [data, setData] = useState([]);
+                               }) {
+    const [points, setPoints] = useState([]);
     const wsRef = useRef(null);
 
     useEffect(() => {
-        // Build full URL: add ?subject={id}.telemetry
-        const url = `${BASE_WS_URL}/?subject=${encodeURIComponent(
-            id + '.telemetry'
-        )}`;
+        const url = `${WS_BASE}/?subject=devices.${deviceCode}.telemetry`;
         const ws = new WebSocket(url);
         wsRef.current = ws;
 
-        ws.addEventListener('open', () => {
-            console.log('TelemetryChart socket open:', url);
-        });
-
-        ws.addEventListener('message', (evt) => {
+        ws.onmessage = (e) => {
             let msg;
             try {
-                msg = JSON.parse(evt.data);
-            } catch (err) {
-                console.error('Invalid JSON:', evt.data);
+                msg = JSON.parse(e.data);
+            } catch {
                 return;
             }
 
-            // drill out the two values
-            const x = get(msg, xKey);
-            const y = get(msg, yKey);
+            const rawX = get(msg, xPath);
+            const rawY = get(msg, yPath);
+            if (rawX == null || rawY == null) return;
 
-            if (x === undefined || y === undefined) {
-                console.warn(
-                    `TelemetryChart: could not resolve xKey='${xKey}' or yKey='${yKey}'`,
-                    msg
-                );
-                return;
-            }
+            const ts   = new Date(rawX).getTime();
+            const xVal = new Date(Math.floor(ts / roundToMs) * roundToMs); // bucket
+            const yVal = Number(rawY);
 
-            setData((prev) => {
-                const next = [...prev, { [xKey]: x, [yKey]: y }];
-                return next.length > bufferSize
-                    ? next.slice(next.length - bufferSize)
-                    : next;
+            setPoints((prev) => {
+                const next = [...prev];
+
+                // if last point has same x, replace it (debounce)
+                if (next.length && next[next.length - 1].x.getTime() === xVal.getTime()) {
+                    next[next.length - 1] = { x: xVal, y: yVal };
+                } else {
+                    next.push({ x: xVal, y: yVal });
+                }
+                return next.slice(-bufferSize);
             });
-        });
-
-        ws.addEventListener('error', (err) => {
-            console.error('TelemetryChart socket error', err);
-        });
-
-        return () => {
-            ws.close();
         };
-    }, [id, xKey, yKey, bufferSize]);
 
-    const Chart = { line: LineChart, area: AreaChart, bar: BarChart }[chartType];
+        return () => ws.close();
+    }, [deviceCode, xPath, yPath, roundToMs, bufferSize]);
 
-    return (
-        <ResponsiveContainer width="100%" height="100%">
-            <Chart data={data}>
-                <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                <XAxis dataKey={xKey} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {chartType === 'line' && (
-                    <Line
-                        type="monotone"
-                        dataKey={yKey}
-                        stroke={color}
-                        dot={false}
-                    />
-                )}
-                {chartType === 'area' && (
-                    <Area
-                        type="monotone"
-                        dataKey={yKey}
-                        stroke={color}
-                        fill={color}
-                    />
-                )}
-                {chartType === 'bar' && <Bar dataKey={yKey} fill={color} />}
-            </Chart>
-        </ResponsiveContainer>
-    );
-};
+    const data = {
+        datasets: [
+            {
+                label: yPath,
+                data: points,
+                borderColor: color,
+                backgroundColor: `${color}33`,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,           // smoother look
+            },
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        animation: false,
+        scales: {
+            x: {
+                type: 'time',
+                bounds: 'ticks',
+                time: {
+                    tooltipFormat: 'HH:mm:ss',
+                    displayFormats: { second: 'HH:mm:ss' },
+                },
+                ticks: {
+                    source: 'auto',
+                    autoSkip: true,
+                    maxTicksLimit: 8,
+                    callback: (v, i, ticks) =>
+                        format(new Date(v), 'HH:mm:ss'), // trim label
+                },
+                grid: { color: '#eee' },
+            },
+            y: {
+                grid: { color: '#eee' },
+            },
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: { intersect: false, mode: 'index' },
+        },
+    };
+
+    return <Line data={data} options={options} />;
+}
 
 TelemetryChart.propTypes = {
-    /** like "devices.SZKYZF3JXGWPHXAN" (we append .telemetry ourselves) */
-    id: PropTypes.string.isRequired,
-    /** e.g. "timestamp" or "data.temp" */
-    xKey: PropTypes.string.isRequired,
-    /** e.g. "data.temp" or "data.humidity" */
-    yKey: PropTypes.string.isRequired,
+    deviceCode: PropTypes.string.isRequired,
+    xPath:      PropTypes.string,  // dot-path
+    yPath:      PropTypes.string,
+    roundToMs:  PropTypes.number,
     bufferSize: PropTypes.number,
-    chartType: PropTypes.oneOf(['line', 'area', 'bar']),
-    color: PropTypes.string,
+    color:      PropTypes.string,
 };
-
 TelemetryChart.defaultProps = {
-    bufferSize: 50,
-    chartType: 'line',
+    xPath: 'timestamp',
+    yPath: 'data.temp',
+    roundToMs: 1000,
+    bufferSize: 180,  // ~3 minutes @1 s
     color: '#00bcd4',
 };
