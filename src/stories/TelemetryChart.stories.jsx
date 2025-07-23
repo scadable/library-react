@@ -1,15 +1,17 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+import { TelemetryChart } from '../components/TelemetryChart';
 
-import TelemetryChart from '../components/TelemetryChart';
+export default {
+    title: 'Charts/TelemetryChart',
+    component: TelemetryChart,
+};
 
-const stories = storiesOf('Charts', module);
-
-stories.add('Telemetry Chart', () => {
-    return (
-        <div style={{ width: '100%', height: '400px' }}>
-            <TelemetryChart />
+export const Default = {
+    render: (args) => (
+        <div style={{ width: '100%', height: 400 }}>
+            <TelemetryChart {...args} />
         </div>
-    );
-});
+    ),
+    args: {},          // put story-level props here later
+};
 
