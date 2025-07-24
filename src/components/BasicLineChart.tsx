@@ -1,130 +1,141 @@
-// File: src/components/BasicLineChart.tsx
+// Completely rewired to use Chart.js instead of Recharts
 
-import React from "react";
-// Alias the Recharts LineChart so we can call our wrapper BasicLineChart
+import React from 'react';
+import { Line } from 'react-chartjs-2';
 import {
-    LineChart   as RechartsLineChart,
-    Line,
-    XAxis,
-    YAxis,
+    Chart as ChartJS,
+    LineElement,
+    PointElement,
+    LinearScale,
+    TimeScale,
     Tooltip,
-    ResponsiveContainer,
-    CartesianGrid,
     Legend,
-    Label,
-} from "recharts";
-import { DataPoint } from "../services/liveQueryService";
-import {ScadableAPIKeyProvider} from "../contexts/ScadableAPIKeyContext";
-import {ScadableDeviceIDProvider} from "../contexts/ScadableDeviceIDContext";
-import {useLiveQuery} from "../hooks/useLiveQuery";
+} from 'chart.js';
+import 'chartjs-adapter-date-fns';
 
-/**
- * Configuration for a single line chart.
- */
+import {
+    ScadableAPIKeyProvider,
+} from '../contexts/ScadableAPIKeyContext';
+import {
+    ScadableDeviceIDProvider,
+} from '../contexts/ScadableDeviceIDContext';
+import { useLiveQuery } from '../hooks/useLiveQuery';
+
+ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend);
+
+/* ---------------- types & helpers ---------------- */
+
 export interface LineChartConfig {
-    /** API Key for the user **/
     apiKey?: string;
-    /** Device ID to query telemetry from. */
     deviceID?: string;
 
-    /** Key in each data point to use for X axis. */
     xKey: string;
-    /** Label/title for the X axis. */
     xLabel: string;
-    /** Formatter for X axis ticks. */
-    formatX?: (value: any) => string;
+    formatX?: (v: any) => string;
 
-    /** Key in each data point to use for Y axis. */
     yKey: string;
-    /** Label/title for the Y axis. */
     yLabel: string;
-    /** Formatter for Y axis ticks. */
-    formatY?: (value: any) => string;
+    formatY?: (v: any) => string;
 
-    /** Overall chart title. */
     chartTitle?: string;
-
-    /** Stroke color for the line. */
     color?: string;
-
-    /** Whether to show dots at each point. */
     showDots?: boolean;
 }
 
-const ChartBody: React.FC<{ config: LineChartConfig }> = ({ config }) => {
-    const data = useLiveQuery(60);
+/** Support dot-notation such as "data.temp" */
+function getNested(obj: any, path: string) {
+    const val = path.split('.').reduce((acc, key) => acc?.[key], obj);
 
-    const {
-        xKey,
-        xLabel,
-        formatX,
-        yKey,
-        yLabel,
-        formatY,
-        chartTitle,
-        color = "#8884d8",
-        showDots = false,
-    } = config;
-
-    return (
-        <RechartsLineChart data={useLiveQuery(60)}>
-            <CartesianGrid strokeDasharray="3 3" />
-
-            <XAxis
-                dataKey={xKey}
-                type="number"
-                domain={['auto', 'auto']}
-                tickFormatter={formatX}
-            >
-                <Label value={xLabel} position="insideBottom" offset={-8} />
-            </XAxis>
-
-            <YAxis dataKey={yKey} tickFormatter={formatY}>
-                <Label value={yLabel} angle={-90} position="insideLeft" offset={10} />
-            </YAxis>
-
-            <Tooltip
-                labelFormatter={formatX}
-                formatter={(v: any) => (formatY ? formatY(v) : String(v))}
-            />
-
-            <Legend />
-
-            <Line
-                type="monotone"
-                dataKey={yKey}
-                stroke={color}
-                dot={showDots}
-                isAnimationActive={false}
-            />
-        </RechartsLineChart>
-    )
+    if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(val)) {
+        // ISO string → trim to 3 decimals max before the Z
+        return val.replace(/\.(\d{3})\d*Z$/, '.$1Z');
+    }
+    return val;
 }
 
-/**
- * A reusable line‑chart component that you can drop anywhere.
- *
- * @param data    Array of record‑like objects.
- * @param config  Keys, labels, formatters, and styling options.
- */
-export const BasicLineChart: React.FC<{
-    config: LineChartConfig;
-}> = ({ config }) => {
+/* ---------------- Inner chart body ---------------- */
 
+const ChartBody: React.FC<{ config: LineChartConfig }> = ({ config }) => {
+    const raw = useLiveQuery(120);       // live feed
+    const {
+        xKey,
+        yKey,
+        xLabel,
+        yLabel,
+        formatX,
+        formatY,
+        color = '#3f51b5',
+        showDots = true,
+        chartTitle,
+    } = config;
 
-    return (
-        <div style={{ width: '100%', height: 400 }}>
-            {config.chartTitle && (
-                <h3 style={{ textAlign: 'center', marginBottom: 12 }}>{config.chartTitle}</h3>
-            )}
+    // Transform to Chart.js “{x, y}” points
+    const points = raw.map(pt => ({
+        x: getNested(pt, xKey),
+        y: getNested(pt, yKey),
+    }));
 
-            <ResponsiveContainer width="100%" height="100%">
-                <ScadableAPIKeyProvider initialKey="">
-                    <ScadableDeviceIDProvider initialDeviceID={config.deviceID ?? ''}>
-                        <ChartBody config={config} />
-                    </ScadableDeviceIDProvider>
-                </ScadableAPIKeyProvider>
-            </ResponsiveContainer>
-        </div>
-    );
+    const data = {
+        datasets: [
+            {
+                label: yLabel,
+                data: points,
+                borderColor: color,
+                backgroundColor: color,
+                pointRadius: showDots ? 3 : 0,
+                tension: 0.3,
+            },
+        ],
+    };
+
+    const options: any = {
+        responsive: true,
+        maintainAspectRatio: false,
+        parsing: false,          // we already supply {x,y}
+        plugins: {
+            legend: { position: 'top' },
+            title: chartTitle
+                ? { display: true, text: chartTitle }
+                : { display: false },
+            tooltip: {
+                callbacks: {
+                    label: (ctx: any) =>
+                        formatY ? formatY(ctx.parsed.y) : `${ctx.parsed.y}`,
+                    title: (items: any[]) =>
+                        formatX ? formatX(items[0].parsed.x) : `${items[0].parsed.x}`,
+                },
+            },
+        },
+        scales: {
+            x: {
+                type: 'time',          // works for ISO strings & epoch ms
+                title: { display: true, text: xLabel },
+                ticks: {
+                    callback: formatX,
+                },
+            },
+            y: {
+                title: { display: true, text: yLabel },
+                ticks: {
+                    callback: formatY,
+                },
+            },
+        },
+    };
+
+    return <Line data={data} options={options} />;
 };
+
+/* ---------------- Public wrapper ---------------- */
+
+export const BasicLineChart: React.FC<{ config: LineChartConfig }> = ({
+                                                                          config,
+                                                                      }) => (
+    <ScadableAPIKeyProvider initialKey="">
+        <ScadableDeviceIDProvider initialDeviceID={config.deviceID ?? ''} >
+            <div style={{ width: '100%', height: 400 }}>
+                <ChartBody config={config} />
+            </div>
+        </ScadableDeviceIDProvider>
+    </ScadableAPIKeyProvider>
+);

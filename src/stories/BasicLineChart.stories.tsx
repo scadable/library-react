@@ -20,6 +20,7 @@ const LiveChart = () => {// keep last 120 points
 
                 chartTitle:'Live temperature',
                 color:'#ff5722',
+                showDots: true,                  // show points
             }}
         />
     );
