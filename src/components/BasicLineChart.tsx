@@ -51,15 +51,9 @@ export interface LineChartConfig {
     showDots?: boolean;
 }
 
-/**
- * A reusable line‑chart component that you can drop anywhere.
- *
- * @param data    Array of record‑like objects.
- * @param config  Keys, labels, formatters, and styling options.
- */
-export const BasicLineChart: React.FC<{
-    config: LineChartConfig;
-}> = ({ config }) => {
+const ChartBody: React.FC<{ config: LineChartConfig }> = ({ config }) => {
+    const data = useLiveQuery(60);
+
     const {
         xKey,
         xLabel,
@@ -73,45 +67,61 @@ export const BasicLineChart: React.FC<{
     } = config;
 
     return (
+        <RechartsLineChart data={useLiveQuery(60)}>
+            <CartesianGrid strokeDasharray="3 3" />
+
+            <XAxis
+                dataKey={xKey}
+                type="number"
+                domain={['auto', 'auto']}
+                tickFormatter={formatX}
+            >
+                <Label value={xLabel} position="insideBottom" offset={-8} />
+            </XAxis>
+
+            <YAxis dataKey={yKey} tickFormatter={formatY}>
+                <Label value={yLabel} angle={-90} position="insideLeft" offset={10} />
+            </YAxis>
+
+            <Tooltip
+                labelFormatter={formatX}
+                formatter={(v: any) => (formatY ? formatY(v) : String(v))}
+            />
+
+            <Legend />
+
+            <Line
+                type="monotone"
+                dataKey={yKey}
+                stroke={color}
+                dot={showDots}
+                isAnimationActive={false}
+            />
+        </RechartsLineChart>
+    )
+}
+
+/**
+ * A reusable line‑chart component that you can drop anywhere.
+ *
+ * @param data    Array of record‑like objects.
+ * @param config  Keys, labels, formatters, and styling options.
+ */
+export const BasicLineChart: React.FC<{
+    config: LineChartConfig;
+}> = ({ config }) => {
+
+
+    return (
         <div style={{ width: '100%', height: 400 }}>
-            {chartTitle && (
-                <h3 style={{ textAlign: 'center', marginBottom: 12 }}>{chartTitle}</h3>
+            {config.chartTitle && (
+                <h3 style={{ textAlign: 'center', marginBottom: 12 }}>{config.chartTitle}</h3>
             )}
 
             <ResponsiveContainer width="100%" height="100%">
                 <ScadableAPIKeyProvider initialKey="">
                     <ScadableDeviceIDProvider initialDeviceID={config.deviceID ?? ''}>
-                        <RechartsLineChart data={useLiveQuery(60)}>
-                            <CartesianGrid strokeDasharray="3 3" />
-
-                            <XAxis
-                                dataKey={xKey}
-                                type="number"
-                                domain={['auto', 'auto']}
-                                tickFormatter={formatX}
-                            >
-                                <Label value={xLabel} position="insideBottom" offset={-8} />
-                            </XAxis>
-
-                            <YAxis dataKey={yKey} tickFormatter={formatY}>
-                                <Label value={yLabel} angle={-90} position="insideLeft" offset={10} />
-                            </YAxis>
-
-                            <Tooltip
-                                labelFormatter={formatX}
-                                formatter={(v: any) => (formatY ? formatY(v) : String(v))}
-                            />
-
-                            <Legend />
-
-                            <Line
-                                type="monotone"
-                                dataKey={yKey}
-                                stroke={color}
-                                dot={showDots}
-                                isAnimationActive={false}
-                            />
-                        </RechartsLineChart>
+                        <ChartBody config={config} />
                     </ScadableDeviceIDProvider>
                 </ScadableAPIKeyProvider>
             </ResponsiveContainer>
