@@ -1,7 +1,7 @@
 {
   "name": "scadable",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "scripts": {
@@ -37,5 +37,9 @@
     "date-fns": "^4.1.0",
     "react-chartjs-2": "^5.3.0",
     "recharts": "^3.1.0"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./TelemetryChart": "./dist/TelemetryChart.js"
   }
 }
