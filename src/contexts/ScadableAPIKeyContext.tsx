@@ -16,11 +16,11 @@ const ScadableAPIKeyContext = createContext<APIKeyContextType | undefined>(undef
  * Wrap your tree in this provider to make apiKey available everywhere.
  */
 export const ScadableAPIKeyProvider = ({
-                                           initialKey,
+                                           initialKey = "",
                                            children,
                                        }: {
     /** Bootstrapped value (e.g. from env or login) */
-    initialKey: string;
+    initialKey?: string;
     children: ReactNode;
 }) => {
     const [apiKey, setApiKey] = useState(initialKey);

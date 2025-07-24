@@ -65,7 +65,7 @@ Default.args = {
         yKey: "value",
         yLabel: "Value",
         formatY: (v: number) => `${v.toFixed(1)}`,
-        chartTitle: "Sample Sine‑Wave Data",
+        chartTitle: "Demo Line Chart",
         color: "#00bcd4",
         showDots: false,
     },

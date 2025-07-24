@@ -16,11 +16,11 @@ const ScadableDeviceIDContext = createContext<DeviceIDContextType | undefined>(u
  * Wrap your tree in this provider to make deviceID available everywhere.
  */
 export const ScadableDeviceIDProvider = ({
-                                             initialDeviceID,
+                                             initialDeviceID = "",
                                              children,
                                          }: {
     /** Bootstrapped value (e.g. from router or last‑used) */
-    initialDeviceID: string;
+    initialDeviceID?: string;
     children: ReactNode;
 }) => {
 

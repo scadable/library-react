@@ -13,7 +13,7 @@ import {
     Legend,
     Label,
 } from "recharts";
-import { DataPoint } from "../services/LiveQueryService";
+import { DataPoint } from "../services/liveQueryService";
 import {ScadableAPIKeyProvider} from "../contexts/ScadableAPIKeyContext";
 import {ScadableDeviceIDProvider} from "../contexts/ScadableDeviceIDContext";
 
@@ -73,24 +73,21 @@ export const BasicLineChart: React.FC<{
     } = config;
 
     return (
-        <div style={{ width: "100%", height: 400 }}>
+        <div style={{ width: '100%', height: 400 }}>
             {chartTitle && (
-                <h3 style={{ textAlign: "center", marginBottom: 12 }}>
-                    {chartTitle}
-                </h3>
+                <h3 style={{ textAlign: 'center', marginBottom: 12 }}>{chartTitle}</h3>
             )}
 
-            <ResponsiveContainer>
-                {/* Use the aliased RechartsLineChart, not our wrapper */}
-                <ScadableAPIKeyProvider initialKey={config.apiKey}>
-                    <ScadableDeviceIDProvider initialDeviceID={config.deviceID}>
+            <ResponsiveContainer width="100%" height="100%">
+                <ScadableAPIKeyProvider initialKey={config.apiKey ?? ''}>
+                    <ScadableDeviceIDProvider initialDeviceID={config.deviceID ?? ''}>
                         <RechartsLineChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
 
                             <XAxis
                                 dataKey={xKey}
                                 type="number"
-                                domain={["auto", "auto"]}
+                                domain={['auto', 'auto']}
                                 tickFormatter={formatX}
                             >
                                 <Label value={xLabel} position="insideBottom" offset={-8} />
@@ -102,9 +99,7 @@ export const BasicLineChart: React.FC<{
 
                             <Tooltip
                                 labelFormatter={formatX}
-                                formatter={(value: any) =>
-                                    formatY ? formatY(value) : String(value)
-                                }
+                                formatter={(v: any) => (formatY ? formatY(v) : String(v))}
                             />
 
                             <Legend />
