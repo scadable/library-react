@@ -1,8 +1,8 @@
 {
   "name": "scadable",
   "type": "module",
-  "version": "1.0.1",
-  "main": "dist/index.cjs.js",
+  "version": "1.0.3",
+  "main":   "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -39,7 +39,9 @@
     "recharts": "^3.1.0"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./TelemetryChart": "./dist/TelemetryChart.js"
+    ".": {
+      "import":  "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
   }
 }

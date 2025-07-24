@@ -18,7 +18,7 @@ import { Line } from 'react-chartjs-2';
 // Register the pieces we actually use
 ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
-const WS_BASE = 'ws://138.197.150.159:8004';
+const WS_BASE = 'wss://socket.scadable.com';
 
 function get(obj, path) {
     return path.split('.').reduce((acc, key) => (acc ? acc[key] : undefined), obj);
