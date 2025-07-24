@@ -21,7 +21,7 @@ export function useLiveQuery(bufferSize: number = 60): DataPoint[] {
 
     useEffect(() => {
         // Don't try to connect if we lack credentials
-        if (!apiKey.trim() || !deviceID.trim()) {
+        if (!deviceID.trim()) {
             setData([]);
             return;
         }

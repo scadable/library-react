@@ -16,6 +16,7 @@ import {
 import { DataPoint } from "../services/liveQueryService";
 import {ScadableAPIKeyProvider} from "../contexts/ScadableAPIKeyContext";
 import {ScadableDeviceIDProvider} from "../contexts/ScadableDeviceIDContext";
+import {useLiveQuery} from "../hooks/useLiveQuery";
 
 /**
  * Configuration for a single line chart.
@@ -57,9 +58,8 @@ export interface LineChartConfig {
  * @param config  Keys, labels, formatters, and styling options.
  */
 export const BasicLineChart: React.FC<{
-    data: DataPoint[];
     config: LineChartConfig;
-}> = ({ data, config }) => {
+}> = ({ config }) => {
     const {
         xKey,
         xLabel,
@@ -79,9 +79,9 @@ export const BasicLineChart: React.FC<{
             )}
 
             <ResponsiveContainer width="100%" height="100%">
-                <ScadableAPIKeyProvider initialKey={config.apiKey ?? ''}>
+                <ScadableAPIKeyProvider initialKey="">
                     <ScadableDeviceIDProvider initialDeviceID={config.deviceID ?? ''}>
-                        <RechartsLineChart data={data}>
+                        <RechartsLineChart data={useLiveQuery(60)}>
                             <CartesianGrid strokeDasharray="3 3" />
 
                             <XAxis

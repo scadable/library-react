@@ -1,72 +1,34 @@
-// File: src/stories/BasicLineChart.stories.tsx
+// src/stories/LiveLineChart.stories.tsx
+import React from 'react';
+import { Meta, StoryObj } from '@storybook/react';
+import { BasicLineChart } from '../components/BasicLineChart';
 
-import React from "react";
-import { Meta, Story } from "@storybook/react";
-import {
-    BasicLineChart,
-    LineChartConfig,
-} from "../components/BasicLineChart";
-import { DataPoint } from "../services/LiveQueryService";
+const LiveChart = () => {// keep last 120 points
+
+    return (
+        <BasicLineChart
+            config={{
+                apiKey: '',                      // empty is fine now
+                deviceID: 'SZKYZF3JXGWPHXAN',
+                xKey:  'timestamp',
+                xLabel:'Time',
+                formatX: (iso: string) =>
+                    new Date(iso).toLocaleTimeString(),
+
+                yKey:  'data.temp',              // <-- matches your payload
+                yLabel:'Temp (°C)',
+
+                chartTitle:'Live temperature',
+                color:'#ff5722',
+            }}
+        />
+    );
+};
 
 export default {
-    title: "BasicLineChart",
-    component: BasicLineChart,
-    parameters: {
-        layout: "fullscreen",
-    },
-    argTypes: {
-        data: {
-            control: "object",
-            description: "Array of points to render",
-        },
-        config: {
-            control: "object",
-            description: "Keys, labels, formatting, and style",
-        },
-        "config.apiKey": "",
-        "config.deviceID": "SZKYZF3JXGWPHXAN",
-        "config.xKey": { control: "text", name: "X Key" },
-        "config.xLabel": { control: "text", name: "X Label" },
-        "config.yKey": { control: "text", name: "Y Key" },
-        "config.yLabel": { control: "text", name: "Y Label" },
-        "config.chartTitle": { control: "text", name: "Chart Title" },
-        "config.color": { control: "color", name: "Line Color" },
-        "config.showDots": { control: "boolean", name: "Show Dots" },
-        "config.formatX": { control: false },
-        "config.formatY": { control: false },
-    },
-} as Meta<typeof BasicLineChart>;
+    title: 'LiveLineChart',
+    component: LiveChart,
+    parameters: { layout: 'fullscreen' },
+} satisfies Meta<typeof LiveChart>;
 
-const sampleData: DataPoint[] = Array.from({ length: 20 }).map((_, i) => ({
-    timestamp: Date.now() + i * 1000 * 60,
-    value: Math.round(20 + 10 * Math.sin(i / 3)),
-}));
-
-type StoryProps = {
-    data: DataPoint[];
-    config: LineChartConfig;
-};
-
-const Template: Story<StoryProps> = (args) => (
-    <div style={{ width: "100%", height: "60vh" }}>
-        <BasicLineChart {...args} />
-    </div>
-);
-
-export const Default = Template.bind({});
-Default.args = {
-    data: sampleData,
-    config: {
-        apiKey: "",
-        deviceID: "SZKYZF3JXGWPHXAN",
-        xKey: "timestamp",
-        xLabel: "Time",
-        formatX: (t: number) => new Date(t).toLocaleTimeString(),
-        yKey: "value",
-        yLabel: "Value",
-        formatY: (v: number) => `${v.toFixed(1)}`,
-        chartTitle: "Demo Line Chart",
-        color: "#00bcd4",
-        showDots: false,
-    },
-};
+export const Default: StoryObj<typeof LiveChart> = {};
