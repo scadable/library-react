@@ -9,7 +9,7 @@ import {
 import { DataPoint } from "../services/LiveQueryService";
 
 export default {
-    title: "Charts/BasicLineChart",
+    title: "BasicLineChart",
     component: BasicLineChart,
     parameters: {
         layout: "fullscreen",
@@ -23,6 +23,8 @@ export default {
             control: "object",
             description: "Keys, labels, formatting, and style",
         },
+        "config.apiKey": "",
+        "config.deviceID": "SZKYZF3JXGWPHXAN",
         "config.xKey": { control: "text", name: "X Key" },
         "config.xLabel": { control: "text", name: "X Label" },
         "config.yKey": { control: "text", name: "Y Key" },
@@ -55,6 +57,8 @@ export const Default = Template.bind({});
 Default.args = {
     data: sampleData,
     config: {
+        apiKey: "",
+        deviceID: "SZKYZF3JXGWPHXAN",
         xKey: "timestamp",
         xLabel: "Time",
         formatX: (t: number) => new Date(t).toLocaleTimeString(),

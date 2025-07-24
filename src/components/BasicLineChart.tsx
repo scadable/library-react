@@ -14,11 +14,18 @@ import {
     Label,
 } from "recharts";
 import { DataPoint } from "../services/LiveQueryService";
+import {ScadableAPIKeyProvider} from "../contexts/ScadableAPIKeyContext";
+import {ScadableDeviceIDProvider} from "../contexts/ScadableDeviceIDContext";
 
 /**
  * Configuration for a single line chart.
  */
 export interface LineChartConfig {
+    /** API Key for the user **/
+    apiKey?: string;
+    /** Device ID to query telemetry from. */
+    deviceID?: string;
+
     /** Key in each data point to use for X axis. */
     xKey: string;
     /** Label/title for the X axis. */
@@ -75,39 +82,43 @@ export const BasicLineChart: React.FC<{
 
             <ResponsiveContainer>
                 {/* Use the aliased RechartsLineChart, not our wrapper */}
-                <RechartsLineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                <ScadableAPIKeyProvider initialKey={config.apiKey}>
+                    <ScadableDeviceIDProvider initialDeviceID={config.deviceID}>
+                        <RechartsLineChart data={data}>
+                            <CartesianGrid strokeDasharray="3 3" />
 
-                    <XAxis
-                        dataKey={xKey}
-                        type="number"
-                        domain={["auto", "auto"]}
-                        tickFormatter={formatX}
-                    >
-                        <Label value={xLabel} position="insideBottom" offset={-8} />
-                    </XAxis>
+                            <XAxis
+                                dataKey={xKey}
+                                type="number"
+                                domain={["auto", "auto"]}
+                                tickFormatter={formatX}
+                            >
+                                <Label value={xLabel} position="insideBottom" offset={-8} />
+                            </XAxis>
 
-                    <YAxis dataKey={yKey} tickFormatter={formatY}>
-                        <Label value={yLabel} angle={-90} position="insideLeft" offset={10} />
-                    </YAxis>
+                            <YAxis dataKey={yKey} tickFormatter={formatY}>
+                                <Label value={yLabel} angle={-90} position="insideLeft" offset={10} />
+                            </YAxis>
 
-                    <Tooltip
-                        labelFormatter={formatX}
-                        formatter={(value: any) =>
-                            formatY ? formatY(value) : String(value)
-                        }
-                    />
+                            <Tooltip
+                                labelFormatter={formatX}
+                                formatter={(value: any) =>
+                                    formatY ? formatY(value) : String(value)
+                                }
+                            />
 
-                    <Legend />
+                            <Legend />
 
-                    <Line
-                        type="monotone"
-                        dataKey={yKey}
-                        stroke={color}
-                        dot={showDots}
-                        isAnimationActive={false}
-                    />
-                </RechartsLineChart>
+                            <Line
+                                type="monotone"
+                                dataKey={yKey}
+                                stroke={color}
+                                dot={showDots}
+                                isAnimationActive={false}
+                            />
+                        </RechartsLineChart>
+                    </ScadableDeviceIDProvider>
+                </ScadableAPIKeyProvider>
             </ResponsiveContainer>
         </div>
     );
