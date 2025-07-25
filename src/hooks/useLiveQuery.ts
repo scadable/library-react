@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { LiveQueryService, DataPoint } from "../services/LiveQueryService";
-import { useScadableAPIKey } from "../contexts/ScadableAPIKeyContext";
-import { useScadableDeviceID } from "../contexts/ScadableDeviceIDContext";
 
 /**
  * Custom React hook to subscribe to live telemetry.
@@ -11,10 +9,11 @@ import { useScadableDeviceID } from "../contexts/ScadableDeviceIDContext";
  * @param bufferSize  Maximum number of points to keep (oldest dropped)
  * @returns           Array of most recent DataPoints, newest first
  */
-export function useLiveQuery(bufferSize: number = 60): DataPoint[] {
+export function useLiveQuery(
+    apiKey: string = "",
+    deviceID: string = "",
+    bufferSize: number = 60): DataPoint[] {
 
-    const { apiKey } = useScadableAPIKey();
-    const { deviceID } = useScadableDeviceID();
 
     const [data, setData] = useState<DataPoint[]>([]);
     const svcRef = useRef<LiveQueryService | null>(null);
