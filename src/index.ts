@@ -1,21 +1,21 @@
 /**
  * Scadable Stream - Real-time telemetry data for React applications
- * 
- * This library provides a simple way to consume real-time telemetry data
- * from devices through WebSocket connections in React applications.
+ *
+ * Public entry point: re-export core, hooks, and types
  */
 
-// Export main classes and hooks
-export { Facility } from './Facility';
-export { Device } from './Device';
-export { useLiveTelemetry } from './useLiveTelemetry';
+// Core
+export { Facility } from './core/Facility';
+export { Device } from './core/Device';
 
-// Export types
+// Hooks
+export { useLiveTelemetry } from './hooks';
+
+// Types
 export type {
   TelemetryData,
   WebSocketMessage,
   WebSocketConfig,
-  TelemetryHookResult
-} from './types';
-
-export { ConnectionStatus } from './types';
+  TelemetryHookResult,
+} from './core/types';
+export { ConnectionStatus } from './core/types';

@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Facility } from '../Facility';
-import { Device } from '../Device';
-import { ConnectionStatus } from '../types';
+import { Facility, Device, ConnectionStatus } from '../src/index';
 
-// WebSocket is mocked in test-setup.ts
+// WebSocket is mocked in setupTests.ts
 
 describe('Device', () => {
   let facility: Facility;
@@ -38,18 +36,13 @@ describe('Device', () => {
   it('should handle message subscription and unsubscription', () => {
     const messageHandler = vi.fn();
     const unsubscribe = device.onMessage(messageHandler);
-    
     expect(typeof unsubscribe).toBe('function');
-    
-    // Test unsubscription
     unsubscribe();
-    // Handler should not be called after unsubscription
   });
 
   it('should handle error subscription and unsubscription', () => {
     const errorHandler = vi.fn();
     const unsubscribe = device.onError(errorHandler);
-    
     expect(typeof unsubscribe).toBe('function');
     unsubscribe();
   });
@@ -57,7 +50,6 @@ describe('Device', () => {
   it('should handle status change subscription and unsubscription', () => {
     const statusHandler = vi.fn();
     const unsubscribe = device.onStatusChange(statusHandler);
-    
     expect(typeof unsubscribe).toBe('function');
     unsubscribe();
   });
@@ -65,7 +57,6 @@ describe('Device', () => {
   it('should connect and disconnect properly', () => {
     device.connect();
     expect(device.getConnectionStatus()).toBe(ConnectionStatus.CONNECTING);
-    
     device.disconnect();
     expect(device.getConnectionStatus()).toBe(ConnectionStatus.DISCONNECTED);
   });
@@ -73,8 +64,6 @@ describe('Device', () => {
   it('should not connect if already connected', () => {
     device.connect();
     const initialStatus = device.getConnectionStatus();
-    
-    // Try to connect again
     device.connect();
     expect(device.getConnectionStatus()).toBe(initialStatus);
   });
@@ -82,34 +71,24 @@ describe('Device', () => {
   it('should parse JSON messages correctly', () => {
     const messageHandler = vi.fn();
     device.onMessage(messageHandler);
-    
-    // Simulate receiving a JSON message
     const jsonMessage = { temperature: 25.5, humidity: 60 };
-    
-    // Access private method through any type
     (device as any).handleMessage(JSON.stringify(jsonMessage));
-    
     expect(messageHandler).toHaveBeenCalledWith(jsonMessage);
   });
 
   it('should handle non-JSON messages as raw strings', () => {
     const messageHandler = vi.fn();
     device.onMessage(messageHandler);
-    
-    // Simulate receiving a non-JSON message
     const rawMessage = 'raw telemetry data';
     (device as any).handleMessage(rawMessage);
-    
     expect(messageHandler).toHaveBeenCalledWith(rawMessage);
   });
 
   it('should check connection status correctly', () => {
     expect(device.isConnected()).toBe(false);
-    
     device.connect();
-    // After connection, it should be connected (mocked to connect immediately)
-    // Note: In real tests, we'd wait for the async connection, but for unit tests
-    // we're just verifying the method exists and can be called
     expect(typeof device.isConnected).toBe('function');
   });
 });
+
+

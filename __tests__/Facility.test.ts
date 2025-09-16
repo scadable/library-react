@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Facility } from '../Facility';
+import { Facility } from '../src/index';
 
 describe('Facility', () => {
   it('should create a facility with a valid API key', () => {
@@ -23,3 +23,5 @@ describe('Facility', () => {
     expect(facility.isValid()).toBe(true);
   });
 });
+
+
