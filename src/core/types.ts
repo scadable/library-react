@@ -46,6 +46,6 @@ export const ConnectionStatus = {
   CONNECTED: 'connected',
   ERROR: 'error'
 } as const;
-export type ConnectionStatus = typeof ConnectionStatus[keyof typeof ConnectionStatus];
+export type ConnectionStatusValue = typeof ConnectionStatus[keyof typeof ConnectionStatus];
 
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Device } from '../core/Device';
-import { TelemetryData, ConnectionStatus } from '../core/types';
+import { TelemetryData, ConnectionStatus, type ConnectionStatusValue } from '../core/types';
 
 /**
  * React hook for consuming real-time telemetry data from a Device
@@ -29,7 +29,7 @@ export function useLiveTelemetry(device: Device): {
   }, []);
 
   // Handle connection status changes
-  const handleStatusChange = useCallback((status: ConnectionStatus) => {
+  const handleStatusChange = useCallback((status: ConnectionStatusValue) => {
     setIsConnected(status === ConnectionStatus.CONNECTED);
     if (status === ConnectionStatus.CONNECTED) {
       setError(null);

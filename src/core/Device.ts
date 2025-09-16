@@ -1,5 +1,5 @@
 import { Facility } from './Facility';
-import { ConnectionStatus, TelemetryData } from './types';
+import { ConnectionStatus, type ConnectionStatusValue, TelemetryData } from './types';
 import { parseMessage } from '../utils/parseMessage';
 
 /**
@@ -9,7 +9,7 @@ export class Device {
   private readonly facility: Facility;
   private readonly deviceId: string;
   private webSocket: WebSocket | null = null;
-  private connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED;
+  private connectionStatus: ConnectionStatusValue = ConnectionStatus.DISCONNECTED;
   private messageHandlers: Set<(_data: TelemetryData | string) => void> = new Set();
   private errorHandlers: Set<(_errorMessage: string) => void> = new Set();
   private statusHandlers: Set<(_connectionStatus: ConnectionStatus) => void> = new Set();
@@ -39,7 +39,7 @@ export class Device {
   /**
    * Get the current connection status
    */
-  getConnectionStatus(): ConnectionStatus {
+  getConnectionStatus(): ConnectionStatusValue {
     return this.connectionStatus;
   }
 
@@ -111,7 +111,7 @@ export class Device {
   /**
    * Update connection status and notify handlers
    */
-  private updateConnectionStatus(status: ConnectionStatus): void {
+  private updateConnectionStatus(status: ConnectionStatusValue): void {
     this.connectionStatus = status;
     this.statusHandlers.forEach(handler => handler(status));
   }
@@ -149,7 +149,7 @@ export class Device {
   /**
    * Subscribe to connection status changes
    */
-  onStatusChange(handler: (_connectionStatus: ConnectionStatus) => void): () => void {
+  onStatusChange(handler: (_connectionStatus: ConnectionStatusValue) => void): () => void {
     this.statusHandlers.add(handler);
     return () => this.statusHandlers.delete(handler);
   }

@@ -19,3 +19,4 @@ export type {
   TelemetryHookResult,
 } from './core/types';
 export { ConnectionStatus } from './core/types';
+export type { ConnectionStatusValue } from './core/types';
