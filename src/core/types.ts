@@ -40,11 +40,12 @@ export interface TelemetryHookResult {
 /**
  * Device connection status
  */
-export enum ConnectionStatus {
-  DISCONNECTED = 'disconnected',
-  CONNECTING = 'connecting',
-  CONNECTED = 'connected',
-  ERROR = 'error'
-}
+export const ConnectionStatus = {
+  DISCONNECTED: 'disconnected',
+  CONNECTING: 'connecting',
+  CONNECTED: 'connected',
+  ERROR: 'error'
+} as const;
+export type ConnectionStatus = typeof ConnectionStatus[keyof typeof ConnectionStatus];
 
 
