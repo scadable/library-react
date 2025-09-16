@@ -18,6 +18,14 @@ export default [
         document: 'readonly',
         window: 'readonly',
         navigator: 'readonly',
+        console: 'readonly',
+        WebSocket: 'readonly',
+        URL: 'readonly',
+        setTimeout: 'readonly',
+        global: 'readonly',
+        Event: 'readonly',
+        MessageEvent: 'readonly',
+        CloseEvent: 'readonly',
       },
     },
     plugins: {
@@ -30,9 +38,16 @@ export default [
       ...reactPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
+      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }],
     },
     settings: {
       react: { version: 'detect' },
+    },
+  },
+  {
+    files: ['src/types.ts'],
+    rules: {
+      'no-unused-vars': 'off',
     },
   },
   {
