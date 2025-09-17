@@ -4,12 +4,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TelemetryDisplay } from './TelemetryDisplay';
 import {Device} from "../core/Device";
 import {Facility} from "../core/Facility";
-import {Timeout} from "Npde";
-
 
 // Mock Device for Storybook
 class MockDevice extends Device {
-    private mockInterval: Timeout | null = null;
+    private mockInterval: ReturnType<typeof setInterval> | null = null; // Changed this line
 
     constructor(facility: Facility, deviceId: string) {
         super(facility, deviceId);

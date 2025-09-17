@@ -26,6 +26,8 @@ export default [
         Event: 'readonly',
         MessageEvent: 'readonly',
         CloseEvent: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     plugins: {
