@@ -11,5 +11,3 @@ export function parseMessage(payload: string): TelemetryData | string {
     return payload;
   }
 }
-
-
