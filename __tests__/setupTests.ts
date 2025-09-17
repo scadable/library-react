@@ -2,7 +2,13 @@ import '@testing-library/jest-dom';
 
 // Mock WebSocket globally
 class MockWebSocket {
-  public readyState: number = WebSocket.CONNECTING;
+  // Define static properties to avoid relying on the global WebSocket object
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+
+  public readyState: number = MockWebSocket.CONNECTING;
   public onopen: ((_event: Event) => void) | null = null;
   public onmessage: ((_event: MessageEvent) => void) | null = null;
   public onerror: ((_event: Event) => void) | null = null;
@@ -13,7 +19,7 @@ class MockWebSocket {
     this.url = url;
     // Simulate connection after a short delay
     setTimeout(() => {
-      this.readyState = WebSocket.OPEN;
+      this.readyState = MockWebSocket.OPEN; // Use the static property
       if (this.onopen) {
         this.onopen(new Event('open'));
       }
@@ -21,21 +27,26 @@ class MockWebSocket {
   }
 
   close() {
-    this.readyState = WebSocket.CLOSED;
+    this.readyState = MockWebSocket.CLOSED; // Use the static property
     if (this.onclose) {
       this.onclose(new CloseEvent('close'));
     }
+  }
+
+  send() {
+    // No-op for this mock
   }
 }
 
 // Mock global WebSocket
 global.WebSocket = MockWebSocket as any;
 
-// Mock CloseEvent
-global.CloseEvent = class CloseEvent extends Event {
+// Mock Event classes
+global.Event = class Event {
   constructor(type: string) {
-    super(type);
+    // @ts-ignore
+    this.type = type;
   }
 } as any;
-
-
+global.MessageEvent = class MessageEvent extends Event {} as any;
+global.CloseEvent = class CloseEvent extends Event {} as any;
