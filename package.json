@@ -1,8 +1,10 @@
 {
-  "name": "library-react",
+  "name": "scadable",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A React library for consuming real-time telemetry data through WebSocket connections.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build",
@@ -16,7 +18,12 @@
     "type": "git",
     "url": "git+https://github.com/scadable/library-react.git"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "websocket",
+    "telemetry",
+    "real-time"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
@@ -30,17 +37,12 @@
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/addon-mdx-gfm": "^8.6.14",
-    "@storybook/cli": "^8.6.14",
-    "@storybook/core-server": "^8.6.14",
-    "@storybook/jest": "^0.2.2",
     "@storybook/react": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",
     "@storybook/test": "^8.6.14",
-    "@storybook/test-runner": "^0.23.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/eslint__js": "^8.42.3",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
@@ -55,5 +57,8 @@
     "react-dom": "^19.1.1",
     "vite": "^6.3.6",
     "vitest": "^3.2.4"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
