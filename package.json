@@ -1,6 +1,6 @@
 {
   "name": "scadable",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "A React library for consuming real-time telemetry data through WebSocket connections.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
