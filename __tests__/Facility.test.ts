@@ -23,5 +23,3 @@ describe('Facility', () => {
     expect(facility.isValid()).toBe(true);
   });
 });
-
-
