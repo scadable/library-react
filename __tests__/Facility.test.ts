@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Facility } from '../src/index';
+import { Facility } from '../src';
 
 describe('Facility', () => {
   it('should create a facility with a valid API key', () => {

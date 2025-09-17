@@ -38,6 +38,14 @@ export class Facility {
 
         return new WebSocket(url.toString());
     }
+
+    /**
+     * Get the API key for WebSocket authentication
+     * @returns The API key
+     */
+    getApiKey(): string {
+        return this.apiKey;
+    }
 }
 
 
