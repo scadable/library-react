@@ -4,65 +4,62 @@ import { TelemetryData, ConnectionStatus, type ConnectionStatusValue } from '../
 
 /**
  * React hook for consuming real-time telemetry data from a Device
- * 
+ *
  * @param device - The Device instance to connect to
  * @returns Object containing telemetry data, connection status, and error state
  */
 export function useLiveTelemetry(device: Device): {
-  telemetry: TelemetryData | string | null;
-  isConnected: boolean;
-  error: string | null;
+    telemetry: TelemetryData | string | null;
+    isConnected: boolean;
+    error: string | null;
 } {
-  const [telemetry, setTelemetry] = useState<TelemetryData | string | null>(null);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+    const [state, setState] = useState<{
+        telemetry: TelemetryData | string | null;
+        isConnected: boolean;
+        error: string | null;
+    }>({
+        telemetry: null,
+        isConnected: false,
+        error: null,
+    });
 
-  // Handle incoming telemetry messages
-  const handleMessage = useCallback((data: TelemetryData | string) => {
-    setTelemetry(data);
-    setError(null); // Clear any previous errors on successful message
-  }, []);
+    const handleMessage = useCallback((data: TelemetryData | string) => {
+        setState(prevState => ({ ...prevState, telemetry: data, error: null }));
+    }, []);
 
-  // Handle connection errors
-  const handleError = useCallback((errorMessage: string) => {
-    setError(errorMessage);
-  }, []);
+    const handleError = useCallback((errorMessage: string) => {
+        setState(prevState => ({ ...prevState, error: errorMessage }));
+    }, []);
 
-  // Handle connection status changes
-  const handleStatusChange = useCallback((status: ConnectionStatusValue) => {
-    setIsConnected(status === ConnectionStatus.CONNECTED);
-    if (status === ConnectionStatus.CONNECTED) {
-      setError(null);
-    }
-  }, []);
+    const handleStatusChange = useCallback((status: ConnectionStatusValue) => {
+        setState(prevState => ({
+            ...prevState,
+            isConnected: status === ConnectionStatus.CONNECTED,
+            error: status === ConnectionStatus.CONNECTED ? null : prevState.error,
+        }));
+    }, []);
 
-  useEffect(() => {
-    if (!device) {
-      setError('Device instance is required');
-      return;
-    }
+    useEffect(() => {
+        if (!device) {
+            setState(prevState => ({ ...prevState, error: 'Device instance is required' }));
+            return;
+        }
 
-    device.connect();
+        device.connect();
 
-    const unsubscribeMessage = device.onMessage(handleMessage);
-    const unsubscribeError = device.onError(handleError);
-    const unsubscribeStatus = device.onStatusChange(handleStatusChange);
+        const unsubscribeMessage = device.onMessage(handleMessage);
+        const unsubscribeError = device.onError(handleError);
+        const unsubscribeStatus = device.onStatusChange(handleStatusChange);
 
-    setIsConnected(device.isConnected());
+        setState(prevState => ({ ...prevState, isConnected: device.isConnected() }));
 
-    return () => {
-      unsubscribeMessage();
-      unsubscribeError();
-      unsubscribeStatus();
-      device.disconnect();
-    };
-  }, [device, handleMessage, handleError, handleStatusChange]);
+        return () => {
+            unsubscribeMessage();
+            unsubscribeError();
+            unsubscribeStatus();
+            device.disconnect();
+        };
+    }, [device, handleMessage, handleError, handleStatusChange]);
 
-  return {
-    telemetry,
-    isConnected,
-    error
-  };
+    return state;
 }
-
-
