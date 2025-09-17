@@ -7,7 +7,7 @@ import {Facility} from "../core/Facility";
 
 // Mock Device for Storybook
 class MockDevice extends Device {
-    private mockInterval: ReturnType<typeof setInterval> | null = null; // Changed this line
+    private mockInterval: ReturnType<typeof setInterval> | null = null;
 
     constructor(facility: Facility, deviceId: string) {
         super(facility, deviceId);
