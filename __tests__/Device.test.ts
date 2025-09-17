@@ -90,5 +90,3 @@ describe('Device', () => {
     expect(typeof device.isConnected).toBe('function');
   });
 });
-
-
