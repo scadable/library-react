@@ -9,7 +9,7 @@ export { Facility } from './core/Facility';
 export { Device } from './core/Device';
 
 // Hooks
-export { useLiveTelemetry } from './hooks';
+export { useLiveTelemetry } from './hooks/useLiveTelemetry';
 
 // Types
 export type {
