@@ -111,5 +111,3 @@ describe('useLiveTelemetry', () => {
     expect(result.current.telemetry).toEqual({ temperature: 25, humidity: 60 });
   });
 });
-
-
