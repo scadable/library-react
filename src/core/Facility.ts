@@ -47,5 +47,3 @@ export class Facility {
         return this.apiKey;
     }
 }
-
-
