@@ -47,5 +47,3 @@ export const ConnectionStatus = {
   ERROR: 'error'
 } as const;
 export type ConnectionStatusValue = typeof ConnectionStatus[keyof typeof ConnectionStatus];
-
-
