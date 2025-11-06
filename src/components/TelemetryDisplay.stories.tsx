@@ -21,11 +21,18 @@ class MockDevice extends Device {
             let temperature = 20;
             this.mockInterval = setInterval(() => {
                 temperature += Math.random() * 2 - 1; // Fluctuate temperature
-                const mockData = {
-                    temperature: parseFloat(temperature.toFixed(2)),
+                const mockPayload = {
+                    broker_id: "service-mqtt-mock-12345",
+                    device_id: "storybook-device-id",
+                    payload: "Mw==",
+                    qos: 0,
                     timestamp: new Date().toISOString(),
+                    topic: "sensors/temperature",
+                    data: {
+                        tempreture: parseFloat(temperature.toFixed(2)),
+                    },
                 };
-                (this as any).handleMessage(JSON.stringify(mockData));
+                (this as any).handleMessage(JSON.stringify(mockPayload));
             }, 2000);
         }, 1000);
     }

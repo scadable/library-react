@@ -45,8 +45,8 @@ export const TelemetryDisplay: React.FC<TelemetryDisplayProps> = ({ device }) =>
                 <p>
                     Temperature:{" "}
                     <span style={{ fontWeight: 'bold' }}>
-            {telemetry && typeof telemetry === 'object' && 'temperature' in telemetry
-                ? `${telemetry.temperature}°C`
+            {telemetry && typeof telemetry === 'object' && 'data' in telemetry && telemetry.data && 'tempreture' in telemetry.data
+                ? `${telemetry.data.tempreture}°C`
                 : '--'}
           </span>
                 </p>
@@ -58,7 +58,7 @@ export const TelemetryDisplay: React.FC<TelemetryDisplayProps> = ({ device }) =>
                     borderRadius: '4px',
                     fontFamily: 'monospace'
                 }}>
-                    <strong>Raw Data:</strong>
+                    <strong>Raw Payload:</strong>
                     <pre style={{ margin: '10px 0 0 0', whiteSpace: 'pre-wrap' }}>
             {telemetry ? JSON.stringify(telemetry, null, 2) : 'No data received'}
           </pre>

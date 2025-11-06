@@ -5,7 +5,7 @@
 export class Facility {
 
     private readonly apiKey: string;
-    private readonly baseUrl = 'wss://stream.scadable.com';
+    private readonly baseUrl = 'wss://stream.scadable.com/ws/live';
 
     constructor(apiKey: string) {
 

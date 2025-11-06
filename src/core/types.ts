@@ -11,6 +11,19 @@ export interface TelemetryData {
 }
 
 /**
+ * WebSocket payload structure from Scadable
+ */
+export interface ScadablePayload {
+  broker_id: string;
+  device_id: string;
+  payload: string;
+  qos: number;
+  timestamp: string;
+  topic: string;
+  data: TelemetryData;
+}
+
+/**
  * WebSocket message structure
  */
 export interface WebSocketMessage {

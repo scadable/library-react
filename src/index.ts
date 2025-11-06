@@ -11,9 +11,14 @@ export { Device } from './core/Device';
 // Hooks
 export { useLiveTelemetry } from './hooks/useLiveTelemetry';
 
+// Components
+export { LiveTelemetryLineChart } from './components/LiveTelemetryLineChart';
+export type { LiveTelemetryLineChartProps } from './components/LiveTelemetryLineChart';
+
 // Types
 export type {
   TelemetryData,
+  ScadablePayload,
   WebSocketMessage,
   WebSocketConfig,
   TelemetryHookResult,
