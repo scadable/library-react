@@ -15,10 +15,13 @@ export default defineConfig({
     ],
     build: {
         lib: {
-            entry: resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/index.ts'),
+            entry: {
+                index: resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/index.ts'),
+                health: resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/health.ts')
+            },
             name: 'Scadable',
             formats: ['es', 'cjs'],
-            fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`
+            fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'js'}`
         },
         rollupOptions: {
             external: ['react', 'react-dom'],
