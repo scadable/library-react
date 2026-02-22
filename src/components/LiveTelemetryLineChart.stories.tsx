@@ -46,7 +46,7 @@ class MockDevice extends Device {
 }
 
 const meta: Meta<typeof LiveTelemetryLineChart> = {
-  title: 'Library/LiveTelemetryLineChart',
+  title: 'Basic/LiveTelemetryLineChart',
   component: LiveTelemetryLineChart,
   tags: ['autodocs'],
   parameters: {
