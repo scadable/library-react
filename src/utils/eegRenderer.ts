@@ -3,7 +3,8 @@
  * Renders multi-channel EEG waveforms with stacked or overlay layout
  */
 
-import { EEG, CANVAS } from './medicalConstants';
+/* eslint-disable no-undef */
+import { CANVAS } from './medicalConstants';
 
 export interface EEGChannelData {
   name: string;

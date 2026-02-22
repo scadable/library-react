@@ -113,10 +113,10 @@ export const CustomPaths: Story = {
         Customize the JSON paths to extract different data from the payload:
       </p>
       <ul style={{ marginBottom: '20px', color: '#666' }}>
-        <li><code>xDataPath: ".timestamp"</code> - Extracts timestamp from root</li>
-        <li><code>yDataPath: ".data.tempreture"</code> - Extracts temperature from nested data</li>
+        <li><code>xDataPath: &quot;.timestamp&quot;</code> - Extracts timestamp from root</li>
+        <li><code>yDataPath: &quot;.data.tempreture&quot;</code> - Extracts temperature from nested data</li>
         <li><code>yMin/yMax: 0/50</code> - Fixed Y-axis range</li>
-        <li><code>lineColor: "#ff7300"</code> - Custom orange line color</li>
+        <li><code>lineColor: &quot;#ff7300&quot;</code> - Custom orange line color</li>
       </ul>
       <LiveTelemetryLineChart {...args} />
     </div>

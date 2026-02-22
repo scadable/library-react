@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect, useRef } from 'react';
 import { Facility } from '../core/Facility';
 import { Device } from '../core/Device';
@@ -35,7 +36,7 @@ export interface ECGChartProps {
   /** Show heart rate display (default: true) */
   showHeartRate?: boolean;
   /** Callback when heart rate changes */
-  onHeartRateChange?: (bpm: number) => void;
+  onHeartRateChange?: (_bpm: number) => void;
   /** Waveform color (default: ECG.COLORS.WAVEFORM) */
   waveformColor?: string;
   /** Grid color (default: ECG.COLORS.GRID_MAJOR) */
@@ -162,9 +163,9 @@ export const ECGChart: React.FC<ECGChartProps> = ({
   }, [heartRate, onHeartRateChange]);
 
   // Determine heart rate color based on range
-  const getHeartRateColor = (bpm: number): string => {
-    if (bpm === 0) return ECG.COLORS.TEXT;
-    if (bpm < ECG.HEART_RATE.NORMAL_MIN || bpm > ECG.HEART_RATE.NORMAL_MAX) {
+  const getHeartRateColor = (heartRateBpm: number): string => {
+    if (heartRateBpm === 0) return ECG.COLORS.TEXT;
+    if (heartRateBpm < ECG.HEART_RATE.NORMAL_MIN || heartRateBpm > ECG.HEART_RATE.NORMAL_MAX) {
       return '#ef4444'; // Red for abnormal
     }
     return '#22c55e'; // Green for normal

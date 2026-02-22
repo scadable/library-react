@@ -3,6 +3,7 @@
  * Renders ECG waveform with medical-standard grid and calibration pulse
  */
 
+/* eslint-disable no-undef */
 import { ECG, CANVAS } from './medicalConstants';
 
 export interface ECGRendererConfig {
