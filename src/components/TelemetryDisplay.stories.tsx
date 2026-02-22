@@ -47,7 +47,7 @@ class MockDevice extends Device {
 }
 
 const meta: Meta<typeof TelemetryDisplay> = {
-    title: 'Library/TelemetryDisplay',
+    title: 'Basic/TelemetryDisplay',
     component: TelemetryDisplay,
     tags: ['autodocs'],
 };

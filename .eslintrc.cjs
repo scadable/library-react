@@ -26,7 +26,7 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
   },
-  ignorePatterns: ['dist/', 'node_modules/', '.storybook/'],
+  ignorePatterns: ['dist/', 'node_modules/', '.storybook/', 'storybook-static/'],
 };
 
 
